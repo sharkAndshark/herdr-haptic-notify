@@ -152,6 +152,7 @@ herdr plugin action invoke doctor --plugin lucas.haptic-notify
 | log shows `skip … rate limited` / `pane buzzed …` | cooldowns doing their job |
 | log shows `skip … exceeds budget` | sequence longer than `maxTotalMs` |
 | no log lines at all | plugin not installed (`herdr plugin list`), or no agent status change yet |
+| `herdr plugin update` fails with `git … Empty reply from server` | private-repo HTTPS auth hiccup. Point just this repo at SSH: `git config --global url."git@github.com:sharkAndshark/herdr-haptic-notify.git".insteadOf "https://github.com/sharkAndshark/herdr-haptic-notify.git"` (irrelevant once the repo is public) |
 
 ## Update, disable, uninstall
 

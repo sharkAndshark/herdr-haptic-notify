@@ -1,6 +1,6 @@
 id = "lucas.haptic-notify"
 name = "Haptic Notify"
-version = "0.1.1"
+version = "0.2.0"
 min_herdr_version = "0.9.0"
 description = "Trackpad haptic notifications when a herdr agent finishes or needs attention (macOS)"
 platforms = ["macos"]
@@ -37,3 +37,27 @@ description = "Print the last 40 lines of the plugin log"
 contexts = ["global"]
 platforms = ["macos"]
 command = ["sh", "scripts/tail-log.sh"]
+
+[[actions]]
+id = "open-lab"
+title = "Haptic notify: pattern lab"
+description = "Open the local pattern audition page (http://127.0.0.1:8765)"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["node", "lab/server.mjs", "--open"]
+
+[[actions]]
+id = "print-config"
+title = "Haptic notify: show config"
+description = "Print the effective config and where it lives"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["sh", "scripts/print-config.sh"]
+
+[[actions]]
+id = "doctor"
+title = "Haptic notify: doctor"
+description = "Diagnose why nothing vibrates (host, trackpad, helper, config, log)"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["sh", "scripts/doctor.sh"]

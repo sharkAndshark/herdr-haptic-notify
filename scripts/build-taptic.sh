@@ -46,7 +46,7 @@ verify_checksum() {
       "$(basename "$file")" "${expected:-<empty>}" "$actual" >&2
     return 1
   fi
-  log "checksum ok: $(basename "$file")"
+  log "checksum ok (downloaded bytes, before the ad-hoc re-sign that follows): $(basename "$file")"
   return 0
 }
 

@@ -89,7 +89,9 @@ Then `herdr plugin install sharkAndshark/herdr-haptic-notify` works for everyone
 and runs our `[[build]]` step), and the repo shows up on herdr.dev/plugins within half an hour.
 
 For reviewers: the build step downloads a prebuilt binary from this repo's releases and **verifies the published
-`sha256`** before running it; `HAPTIC_SKIP_DOWNLOAD=1 sh scripts/build-taptic.sh` compiles the auditable Swift source
+`sha256`** before running it. Note the verification covers the *downloaded bytes*; the installed file is re-signed
+ad-hoc afterwards (an unsigned arm64 binary will not execute), so its bytes intentionally differ from the published
+sum. To compare yourself, verify the asset you downloaded, or build from source: `HAPTIC_SKIP_DOWNLOAD=1 sh scripts/build-taptic.sh` compiles the auditable Swift source
 instead. The plugin id is `lucas.haptic-notify`.
 
 ## Configure

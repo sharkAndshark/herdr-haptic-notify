@@ -19,10 +19,11 @@
 // Everything else lives in ./lib/sequence.js so it can be unit tested.
 
 import { spawn } from "node:child_process";
-import { mkdirSync, readFileSync, renameSync, statSync, truncateSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, truncateSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
+import { fileURLToPath } from "node:url";
 
 import {
   enforceSafety,
@@ -59,8 +60,18 @@ const configDir = () =>
 const stateDir = () =>
   env("HERDR_PLUGIN_STATE_DIR") ?? join(homedir(), ".local/state/herdr/plugins/lucas.haptic-notify");
 const expandHome = (path) => (path.startsWith("~/") ? join(homedir(), path.slice(2)) : path);
-const tapticBin = (config) =>
-  config.taptic ? expandHome(config.taptic) : join(pluginRoot(), "bin", "taptic");
+
+// hook.js lives at the plugin root, so its own directory is the last reliable
+// place to look when running without herdr context (e.g. `node hook.js --test`).
+const HERE = dirname(fileURLToPath(import.meta.url));
+
+function tapticBin(config) {
+  if (config.taptic) return expandHome(config.taptic);
+  for (const candidate of [join(pluginRoot(), "bin", "taptic"), join(HERE, "bin", "taptic")]) {
+    if (existsSync(candidate)) return candidate;
+  }
+  return "taptic"; // PATH
+}
 
 function readConfig() {
   const config = structuredClone(DEFAULT_CONFIG);
@@ -336,6 +347,12 @@ async function main() {
   }
 
   const result = await fire(config, safe.notes);
+  if (result.exitCode !== 0) {
+    // Do not burn the dedupe/rate state for a helper that never played: the
+    // next event should get another chance once the binary is fixed.
+    log({ kind: "fire-failed", pane: event.paneId, status: event.status, ...result });
+    return;
+  }
   markFired(event.paneId, event.status);
   markPaneFired(event.paneId);
   writeRate([...history, Date.now()]);

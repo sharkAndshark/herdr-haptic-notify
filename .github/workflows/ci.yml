@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Lint
+        run: make lint
+
+      - name: Tests
+        run: make test
+
+      - name: Build taptic
+        run: make build
+
+      - name: Helper smoke test
+        run: |
+          set +e
+          ./bin/taptic --help > /dev/null
+          help_status=$?
+          set -e
+          # 0 = ok, 3 = no actuation-capable trackpad on the runner (expected)
+          if [ "$help_status" -ne 0 ] && [ "$help_status" -ne 3 ]; then
+            echo "unexpected taptic --help exit code: $help_status"
+            exit 1
+          fi
+
+      - name: No Actuation On CI
+        run: |
+          # Real actuation is impossible on a headless runner; make sure the
+          # helper degrades instead of crashing.
+          set +e
+          ./bin/taptic -c 1
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ] && [ "$status" -ne 3 ]; then
+            echo "unexpected taptic exit code: $status"
+            exit 1
+          fi

@@ -1,0 +1,9 @@
+# build output
+bin/
+*.dSYM/
+.build/
+
+# local scratch
+.DS_Store
+*.log
+node_modules/

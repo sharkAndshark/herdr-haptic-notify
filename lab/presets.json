@@ -1,0 +1,663 @@
+{
+  "note": "Single source of truth for the haptic lab. Each note: on (ms of continuous tapping), off (ms of silence), waveform (1 back, 2 click, 3 weak buzz, 4 light tap, 5 medium tap, 6 strong tap, 15 low thud, 16 heavy thud), intensity (0-2), frequency (0-2, perceived peak ~0.4).",
+  "presets": [
+    {
+      "id": "d1",
+      "role": "done",
+      "label": "上行三音（叮-咚-叮~）",
+      "notes": [
+        {
+          "on": 60,
+          "off": 70,
+          "waveform": 4,
+          "intensity": 1.4,
+          "frequency": 0.28
+        },
+        {
+          "on": 60,
+          "off": 70,
+          "waveform": 4,
+          "intensity": 1.4,
+          "frequency": 0.46
+        },
+        {
+          "on": 150,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 1.5,
+          "frequency": 0.7
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "role": "done",
+      "label": "柔和三连（最不易烦）",
+      "notes": [
+        {
+          "on": 55,
+          "off": 65,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.3
+        },
+        {
+          "on": 55,
+          "off": 65,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.42
+        },
+        {
+          "on": 140,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.4,
+          "frequency": 0.58
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "role": "done",
+      "label": "两音上扬（最短最克制）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 60,
+          "waveform": 4,
+          "intensity": 1.5,
+          "frequency": 0.35
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 1.5,
+          "frequency": 0.62
+        }
+      ]
+    },
+    {
+      "id": "b1",
+      "role": "blocked",
+      "label": "疑问（哒-哒?-DAA）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 4,
+          "intensity": 1.4,
+          "frequency": 0.62
+        },
+        {
+          "on": 70,
+          "off": 90,
+          "waveform": 4,
+          "intensity": 1.4,
+          "frequency": 0.4
+        },
+        {
+          "on": 140,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 1.45,
+          "frequency": 0.62
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "role": "blocked",
+      "label": "两音下行（嗯…？）",
+      "notes": [
+        {
+          "on": 80,
+          "off": 110,
+          "waveform": 4,
+          "intensity": 1.35,
+          "frequency": 0.58
+        },
+        {
+          "on": 150,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 1.4,
+          "frequency": 0.34
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "role": "blocked",
+      "label": "回旋（高低高）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.5
+        },
+        {
+          "on": 70,
+          "off": 80,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.34
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.4,
+          "frequency": 0.56
+        }
+      ]
+    },
+    {
+      "id": "chime",
+      "role": "demo",
+      "label": "旧版上行铃音",
+      "notes": [
+        {
+          "on": 80,
+          "off": 70,
+          "waveform": 4,
+          "intensity": 2.0,
+          "frequency": 0.15
+        },
+        {
+          "on": 80,
+          "off": 70,
+          "waveform": 4,
+          "intensity": 2.0,
+          "frequency": 0.45
+        },
+        {
+          "on": 180,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 2.0,
+          "frequency": 0.8
+        }
+      ]
+    },
+    {
+      "id": "ring",
+      "role": "demo",
+      "label": "手机铃声节奏（哒·哒——×2）",
+      "notes": [
+        {
+          "on": 50,
+          "off": 60,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.4
+        },
+        {
+          "on": 50,
+          "off": 60,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.4
+        },
+        {
+          "on": 150,
+          "off": 220,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.6
+        },
+        {
+          "on": 50,
+          "off": 60,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.4
+        },
+        {
+          "on": 50,
+          "off": 60,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.4
+        },
+        {
+          "on": 150,
+          "off": 0,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.6
+        }
+      ]
+    },
+    {
+      "id": "tri",
+      "role": "demo",
+      "label": "三连上行短促",
+      "notes": [
+        {
+          "on": 60,
+          "off": 60,
+          "waveform": 3,
+          "intensity": 2.0,
+          "frequency": 0.2
+        },
+        {
+          "on": 60,
+          "off": 60,
+          "waveform": 3,
+          "intensity": 2.0,
+          "frequency": 0.45
+        },
+        {
+          "on": 120,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 2.0,
+          "frequency": 0.9
+        }
+      ]
+    },
+    {
+      "id": "beat",
+      "role": "demo",
+      "label": "心跳（低频闷击）",
+      "notes": [
+        {
+          "on": 90,
+          "off": 130,
+          "waveform": 15,
+          "intensity": 2.0,
+          "frequency": 0.3
+        },
+        {
+          "on": 140,
+          "off": 320,
+          "waveform": 15,
+          "intensity": 2.0,
+          "frequency": 0.3
+        },
+        {
+          "on": 90,
+          "off": 130,
+          "waveform": 15,
+          "intensity": 2.0,
+          "frequency": 0.3
+        },
+        {
+          "on": 140,
+          "off": 0,
+          "waveform": 15,
+          "intensity": 2.0,
+          "frequency": 0.3
+        }
+      ]
+    },
+    {
+      "id": "buzz",
+      "role": "demo",
+      "label": "纯长嗡（对照组）",
+      "notes": [
+        {
+          "on": 250,
+          "off": 0,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.4
+        }
+      ]
+    },
+    {
+      "id": "done-old",
+      "role": "demo",
+      "label": "上一版 done（悦耳三音）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 60,
+          "waveform": 4,
+          "intensity": 1.9,
+          "frequency": 0.3
+        },
+        {
+          "on": 70,
+          "off": 60,
+          "waveform": 4,
+          "intensity": 1.9,
+          "frequency": 0.5
+        },
+        {
+          "on": 190,
+          "off": 0,
+          "waveform": 4,
+          "intensity": 1.9,
+          "frequency": 0.72
+        }
+      ]
+    },
+    {
+      "id": "blocked-old",
+      "role": "demo",
+      "label": "上一版 blocked（啊哦）",
+      "notes": [
+        {
+          "on": 90,
+          "off": 90,
+          "waveform": 6,
+          "intensity": 2.0,
+          "frequency": 0.8
+        },
+        {
+          "on": 170,
+          "off": 0,
+          "waveform": 15,
+          "intensity": 2.0,
+          "frequency": 0.15
+        }
+      ]
+    },
+    {
+      "id": "g1",
+      "role": "done",
+      "label": "轻柔：三声轻点（上行，单 tap）",
+      "notes": [
+        {
+          "on": 22,
+          "off": 95,
+          "waveform": 1,
+          "intensity": 0.85,
+          "frequency": 0.3
+        },
+        {
+          "on": 22,
+          "off": 95,
+          "waveform": 1,
+          "intensity": 0.85,
+          "frequency": 0.5
+        },
+        {
+          "on": 45,
+          "off": 0,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 0.72
+        }
+      ]
+    },
+    {
+      "id": "g2",
+      "role": "done",
+      "label": "最轻：两声极轻点（最小存在感）",
+      "notes": [
+        {
+          "on": 22,
+          "off": 110,
+          "waveform": 1,
+          "intensity": 0.6,
+          "frequency": 0.35
+        },
+        {
+          "on": 38,
+          "off": 0,
+          "waveform": 1,
+          "intensity": 0.65,
+          "frequency": 0.6
+        }
+      ]
+    },
+    {
+      "id": "g3",
+      "role": "done",
+      "label": "柔而闷：三声温和（远离共振）",
+      "notes": [
+        {
+          "on": 25,
+          "off": 100,
+          "waveform": 3,
+          "intensity": 0.9,
+          "frequency": 1.0
+        },
+        {
+          "on": 25,
+          "off": 100,
+          "waveform": 3,
+          "intensity": 0.9,
+          "frequency": 1.2
+        },
+        {
+          "on": 50,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 0.95,
+          "frequency": 1.45
+        }
+      ]
+    },
+    {
+      "id": "gb1",
+      "role": "blocked",
+      "label": "轻柔：下行两声（疑问，不刺耳）",
+      "notes": [
+        {
+          "on": 22,
+          "off": 105,
+          "waveform": 1,
+          "intensity": 0.85,
+          "frequency": 0.7
+        },
+        {
+          "on": 42,
+          "off": 0,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 0.32
+        }
+      ]
+    },
+    {
+      "id": "ladder",
+      "role": "demo",
+      "label": "强度阶梯校准（0.4→1.4，同一轻点）",
+      "notes": [
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.4,
+          "frequency": 0.4
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.6,
+          "frequency": 0.4
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.8,
+          "frequency": 0.4
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 1.0,
+          "frequency": 0.4
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 1.2,
+          "frequency": 0.4
+        },
+        {
+          "on": 30,
+          "off": 0,
+          "waveform": 1,
+          "intensity": 1.4,
+          "frequency": 0.4
+        }
+      ]
+    },
+    {
+      "id": "tone-ladder",
+      "role": "demo",
+      "label": "音色阶梯校准（f 0.2→1.8，同强度）",
+      "notes": [
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 0.2
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 0.4
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 0.8
+        },
+        {
+          "on": 22,
+          "off": 90,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 1.2
+        },
+        {
+          "on": 30,
+          "off": 0,
+          "waveform": 1,
+          "intensity": 0.9,
+          "frequency": 1.8
+        }
+      ]
+    },
+    {
+      "id": "m1",
+      "role": "done",
+      "label": "b3 节奏·纯上行（34→50→66）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.34
+        },
+        {
+          "on": 70,
+          "off": 80,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.5
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.66
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "role": "done",
+      "label": "b3 节奏·上行后落回中音（34→62→48）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.34
+        },
+        {
+          "on": 70,
+          "off": 80,
+          "waveform": 3,
+          "intensity": 1.3,
+          "frequency": 0.62
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.48
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "role": "done",
+      "label": "b3 节奏·更柔（同 b3 但整体压低）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 3,
+          "intensity": 1.15,
+          "frequency": 0.42
+        },
+        {
+          "on": 70,
+          "off": 80,
+          "waveform": 3,
+          "intensity": 1.15,
+          "frequency": 0.3
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.2,
+          "frequency": 0.48
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "role": "blocked",
+      "label": "b3 收低版（50→34→26，更明显地没解决）",
+      "notes": [
+        {
+          "on": 70,
+          "off": 70,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.5
+        },
+        {
+          "on": 70,
+          "off": 80,
+          "waveform": 3,
+          "intensity": 1.35,
+          "frequency": 0.34
+        },
+        {
+          "on": 130,
+          "off": 0,
+          "waveform": 3,
+          "intensity": 1.4,
+          "frequency": 0.26
+        }
+      ]
+    }
+  ]
+}

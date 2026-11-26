@@ -1,0 +1,39 @@
+id = "haptic-notify"
+name = "Haptic Notify"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Trackpad haptic notifications when a herdr agent finishes or needs attention (macOS)"
+platforms = ["macos"]
+
+# Builds bin/taptic from tools/taptic/taptic.swift (or unpacks a prebuilt
+# release asset when no Swift toolchain is present).
+[[build]]
+command = ["sh", "scripts/build-taptic.sh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["node", "hook.js"]
+
+[[actions]]
+id = "test-done"
+title = "Haptic notify: test done"
+description = "Fire the configured done pattern"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["node", "hook.js", "--test", "done"]
+
+[[actions]]
+id = "test-blocked"
+title = "Haptic notify: test needs-attention"
+description = "Fire the configured blocked pattern"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["node", "hook.js", "--test", "blocked"]
+
+[[actions]]
+id = "tail-log"
+title = "Haptic notify: show log"
+description = "Print the last 40 lines of the plugin log"
+contexts = ["global"]
+platforms = ["macos"]
+command = ["sh", "scripts/tail-log.sh"]

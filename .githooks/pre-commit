@@ -1,0 +1,20 @@
+#!/bin/sh
+# Fast pre-commit gate: syntax + JSON validity + pure-logic tests.
+# Install with:  make hooks
+set -eu
+
+printf '[pre-commit] lint\n'
+node --check hook.js
+node --check lib/sequence.js
+node --check lab/server.mjs
+node -e 'JSON.parse(require("fs").readFileSync("config.example.json","utf8"))'
+node -e 'JSON.parse(require("fs").readFileSync("lab/presets.json","utf8"))'
+
+for file in scripts/*.sh install.sh; do
+  sh -n "$file"
+done
+
+printf '[pre-commit] fast tests\n'
+node --test test/sequence.test.js
+
+printf '[pre-commit] ok\n'

@@ -5,8 +5,13 @@ Everything here is **optional**: without a config file the built-in defaults app
 
 ```sh
 CFG="$(herdr plugin config-dir lucas.haptic-notify)/config.json"
-curl -fsSL https://raw.githubusercontent.com/sharkAndshark/herdr-haptic-notify/main/config.example.json > "$CFG"
+# the installed plugin ships the example next to hook.js
+cp "$(herdr plugin list --plugin lucas.haptic-notify --json \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).result.plugins[0].plugin_root))')/config.example.json" "$CFG"
 ```
+
+(No network needed. `herdr plugin action invoke print-config --plugin lucas.haptic-notify` also prints the file when
+none exists, e.g. to copy from.)
 
 Edits take effect on the next event — no reload.
 

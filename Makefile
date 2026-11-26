@@ -70,7 +70,7 @@ release-assets:
 	@mkdir -p dist
 	@cp bin/taptic dist/taptic-macos-arm64
 	@swiftc -O -target x86_64-apple-macos12.0 -o dist/taptic-macos-x86_64 tools/taptic/taptic.swift
-	@for f in dist/taptic-macos-arm64 dist/taptic-macos-x86_64; do \
-		shasum -a 256 "$$f" | awk '{print $$1"  "$$2}' > "$$f.sha256"; \
-		printf '  %s  <- %s\n' "$$(cat $$f.sha256)" "$$f"; \
+	@cd dist && for f in taptic-macos-arm64 taptic-macos-x86_64; do \
+		shasum -a 256 "$$f" > "$$f.sha256"; \
+		printf '  %s\n' "$$(cat $$f.sha256)"; \
 	done

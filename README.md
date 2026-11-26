@@ -22,8 +22,12 @@ herdr plugin install sharkAndshark/herdr-haptic-notify
 herdr plugin action invoke test-done --plugin lucas.haptic-notify
 ```
 
-That is the whole onboarding: install, then feel the pattern. From then on it is silent and hands-off — every pane's
-completion buzzes the trackpad, no window, no daemon, no notification tray.
+That is the whole onboarding: install, then feel the pattern. **There is nothing to configure** — the defaults
+(one `m1` chime for `done`, `blocked` and `idle`) are built into the hook, and the safety limits are on from the first
+event. From then on it is silent and hands-off: every pane's completion buzzes the trackpad, no window, no daemon, no
+notification tray.
+
+A config file is optional and only exists once you want to change something.
 
 ## What using it actually feels like
 
@@ -58,6 +62,13 @@ intensity / a "softness" score, sorts by gentleness, and lets you tweak notes an
 into the config — no reload needed, the next event uses it.
 
 ### Common tweaks
+
+Start from the documented example (the file is optional — without it the built-in defaults above apply):
+
+```sh
+CFG=$(herdr plugin config-dir lucas.haptic-notify)/config.json
+curl -fsSL https://raw.githubusercontent.com/sharkAndshark/herdr-haptic-notify/main/config.example.json > "$CFG"
+```
 
 | goal | change in `~/.config/herdr/plugins/config/lucas.haptic-notify/config.json` |
 |---|---|

@@ -34,11 +34,22 @@ import {
   summarize,
 } from "./lib/sequence.js";
 
+// The pattern you get without any config file. Kept in one place so "install and
+// forget" really works: a fresh `herdr plugin install` has no config yet.
+const DEFAULT_SEQUENCE = "70,70,3,1.3,0.34;70,80,3,1.3,0.5;130,0,3,1.35,0.66";
+
+const DEFAULT_STATUSES = {
+  // `done` = finished and unseen, `idle` = finished and in view, `blocked` = waiting on you
+  done: { label: "m1", sequence: DEFAULT_SEQUENCE, suppressAfterMs: 15000 },
+  blocked: { label: "m1", sequence: DEFAULT_SEQUENCE, suppressAfterMs: 15000 },
+  idle: { label: "m1", sequence: DEFAULT_SEQUENCE, suppressAfterMs: 15000 },
+};
+
 const DEFAULT_CONFIG = {
   enabled: true,
   taptic: "", // empty → <plugin>/bin/taptic, then `taptic` on PATH
   debounceMs: 400,
-  statuses: {},
+  statuses: DEFAULT_STATUSES,
   onlyBackgroundPanes: false,
   safety: {
     enabled: true,
@@ -80,6 +91,9 @@ function readConfig() {
     if (raw && typeof raw === "object") {
       Object.assign(config, raw);
       config.safety = { ...DEFAULT_CONFIG.safety, ...(raw.safety ?? {}) };
+      // An absent `statuses` means "use the built-in defaults"; an explicitly
+      // empty object means "never fire anything" and is respected.
+      if (!("statuses" in raw)) config.statuses = DEFAULT_STATUSES;
     }
   } catch {
     // missing or malformed config keeps the defaults

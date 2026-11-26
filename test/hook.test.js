@@ -28,7 +28,7 @@ const settle = () => sleep(700);
  * `taptic` (records what it was asked to play) so the hook can be exercised
  * end to end without herdr or real hardware.
  */
-function sandbox({ status = "done", statuses = ["done", "blocked", "idle"], sequence = M1, safety } = {}) {
+function sandbox({ status = "done", statuses = ["done", "blocked", "idle"], sequence = M1, safety, writeConfig = true } = {}) {
   const root = mkdtempSync(join(tmpdir(), "haptic-test-"));
   const bin = join(root, "bin");
   const config = join(root, "config");
@@ -54,7 +54,7 @@ esac
   );
   chmodSync(join(bin, "herdr"), 0o755);
 
-  writeFileSync(
+  if (writeConfig) writeFileSync(
     join(config, "config.json"),
     JSON.stringify(
       {
@@ -84,6 +84,7 @@ esac
       env: {
         ...process.env,
         PATH: `${bin}:${process.env.PATH}`,
+        HERDR_PLUGIN_ROOT: root,           // so <plugin>/bin/taptic resolves to the fake
         HERDR_PLUGIN_CONFIG_DIR: config,
         HERDR_PLUGIN_STATE_DIR: state,
         HERDR_BIN_PATH: join(bin, "herdr"),
@@ -169,10 +170,30 @@ test("rate limits bursts across panes", async () => {
   assert.ok(box.log().some((entry) => entry.reason?.includes("rate limited")));
 });
 
+test("works with no config file at all (fresh install)", async () => {
+  const box = sandbox({ writeConfig: false });
+  box.fire("done");
+  const plays = await waitForPlays(box, 1);
+  assert.equal(plays.length, 1, "a fresh install must buzz without any config");
+  assert.ok(plays[0].includes(M1), "built-in default pattern should be the m1 chime");
+});
+
+test("an explicitly empty statuses object disables everything", async () => {
+  const box = sandbox({ statuses: [] });
+  box.fire("done");
+  await settle();
+  assert.equal(box.plays().length, 0, "empty statuses must mean 'never fire'");
+});
+
 test("--test fires the configured pattern without an event", async () => {
   const box = sandbox();
   execFileSync(process.execPath, [HOOK, "--test", "done"], {
-    env: { ...process.env, HERDR_PLUGIN_CONFIG_DIR: join(box.root, "config"), HERDR_PLUGIN_STATE_DIR: join(box.root, "state") },
+    env: {
+      ...process.env,
+      HERDR_PLUGIN_ROOT: box.root,
+      HERDR_PLUGIN_CONFIG_DIR: join(box.root, "config"),
+      HERDR_PLUGIN_STATE_DIR: join(box.root, "state"),
+    },
     stdio: "pipe",
   });
   const plays = await waitForPlays(box, 1);

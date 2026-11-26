@@ -74,7 +74,9 @@ if [ -f "$CONFIG" ]; then
       " minGapMs=" + (safety.minGapMs ?? "off"));
   ' "$CONFIG" || warn "no notify-worthy statuses configured — add done/blocked/idle"
 else
-  warn "$CONFIG missing (defaults are used, so nothing may fire)"
+  ok "no config file — built-in defaults are active"
+  echo "        statuses: done(m1), blocked(m1), idle(m1)   [m1 = the default chime]"
+  echo "        safety: maxIntensity=1.6 maxTotalMs=800 minGapMs=2000"
 fi
 
 echo

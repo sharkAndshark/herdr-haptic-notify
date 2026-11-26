@@ -1,6 +1,6 @@
 id = "lucas.haptic-notify"
 name = "Haptic Notify"
-version = "0.2.0"
+version = "0.3.0"
 min_herdr_version = "0.9.0"
 description = "Trackpad haptic notifications when a herdr agent finishes or needs attention (macOS)"
 platforms = ["macos"]

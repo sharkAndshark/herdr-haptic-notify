@@ -6,8 +6,13 @@ CONFIG="$CONFIG_DIR/config.json"
 
 echo "# config: $CONFIG"
 if [ ! -f "$CONFIG" ]; then
-  echo "(missing — the plugin falls back to config.example.json defaults until a"
-  echo " config appears; copy it with:  cp \"$(dirname -- "$0")/../config.example.json\" \"$CONFIG\")"
+  echo "(no config file — built-in defaults are in use:)"
+  echo
+  cat "$(dirname -- "$0")/../config.example.json"
+  echo
+  echo "# this file is optional; create one only to override something:"
+  echo "#   mkdir -p \"$(dirname "$CONFIG")\""
+  echo "#   cp \"$(dirname -- "$0")/../config.example.json\" \"$CONFIG\""
   exit 0
 fi
 cat "$CONFIG"

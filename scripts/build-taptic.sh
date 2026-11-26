@@ -111,7 +111,7 @@ download_prebuilt() {
       gh release download --repo "$(repo_slug)" --pattern "$asset.sha256" --output "$tmp.sha256" --clobber >/dev/null 2>&1 || true
       if ! verify_checksum "$tmp" "$tmp.sha256"; then
         rm -f "$tmp" "$tmp.sha256"
-        return 1
+        return 2
       fi
       chmod +x "$tmp"
       command -v codesign >/dev/null 2>&1 && codesign --force --sign - "$tmp" >/dev/null 2>&1 || true
@@ -133,7 +133,7 @@ download_prebuilt() {
   curl -fsSL --http1.1 --retry 2 ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} -o "$tmp.sha256" "$url.sha256" || rm -f "$tmp.sha256"
   if ! verify_checksum "$tmp" "$tmp.sha256"; then
     rm -f "$tmp" "$tmp.sha256"
-    return 1
+    return 2
   fi
   rm -f "$tmp.sha256"
   chmod +x "$tmp"
@@ -151,9 +151,20 @@ if [ "${HAPTIC_SKIP_DOWNLOAD:-0}" = "1" ]; then
   exit 0
 fi
 
-if download_prebuilt; then
-  exit 0
-fi
+rc=0
+download_prebuilt || rc=$?
+case "$rc" in
+  0) exit 0 ;;
+  2)
+    cat >&2 <<'EOF'
+[build-taptic] refusing to continue: the downloaded binary does not match its
+published checksum. Nothing was installed and no fallback build was run.
+
+Inspect the release and retry, or build the auditable Swift source instead:
+  HAPTIC_SKIP_DOWNLOAD=1 sh scripts/build-taptic.sh
+EOF
+    exit 1 ;;
+esac
 
 if compile; then
   exit 0

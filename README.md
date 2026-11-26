@@ -32,7 +32,7 @@ Background on the ABI, the waveforms and the safety numbers: [`docs/ARCHITECTURE
 | macOS + Force Touch trackpad | the Taptic Engine is the output device | hardware requirement — nothing to install |
 | herdr ≥ 0.9.0 | plugin event hooks (`pane.agent_status_changed`) | you already have it |
 | **Node ≥ 18** | runs `hook.js` and the optional lab UI | no `npm install`, **zero npm dependencies** — the hook uses only Node built-ins. herdr's own sample plugins (Heeler, etc.) already assume Node |
-| Xcode Command Line Tools | only to compile `bin/taptic` from Swift source | **optional**: falls back to a prebuilt release asset; without either, everything still loads, you just get no vibration |
+| Xcode Command Line Tools | only to compile `bin/taptic` from Swift source | **optional**: the build step downloads the prebuilt release asset first (via `gh` for this private repo, `curl`/`GITHUB_TOKEN` otherwise). Without either, everything still loads, you just get no vibration |
 
 Nothing else. No daemon, no launch agent, no accessibility/Input-Monitoring permission (the private actuator path does not need TCC), no network access.
 
@@ -43,8 +43,13 @@ From a local checkout (recommended while the repo is private):
 ```sh
 git clone git@github.com:sharkAndshark/herdr-haptic-notify.git
 cd herdr-haptic-notify
-sh install.sh          # build bin/taptic, link into herdr, seed config
+sh install.sh          # fetch/build bin/taptic, link into herdr, seed config
 ```
+
+`sh install.sh` needs neither Xcode nor `npm`: it downloads the prebuilt helper from
+the [latest release](https://github.com/sharkAndshark/herdr-haptic-notify/releases)
+(`gh release download` when the repo is private, plain `curl` otherwise) and only falls
+back to `swiftc` when no asset matches your architecture.
 
 Or, straight through herdr (needs git credentials for a private repo):
 

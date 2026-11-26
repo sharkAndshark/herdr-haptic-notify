@@ -57,7 +57,9 @@ repo_slug() {
 }
 
 download_prebuilt() {
+  explicit_base=1
   if [ -z "${HAPTIC_RELEASE_BASE:-}" ]; then
+    explicit_base=0
     slug=$(repo_slug) || return 1
     HAPTIC_RELEASE_BASE="https://github.com/$slug/releases/latest/download"
   fi
@@ -65,11 +67,25 @@ download_prebuilt() {
     return 1
   fi
 
-  url="$HAPTIC_RELEASE_BASE/taptic-macos-$ASSET_ARCH"
+  asset="taptic-macos-$ASSET_ARCH"
+  url="$HAPTIC_RELEASE_BASE/$asset"
   tmp="$OUT.download"
 
+  # A private repo's release assets need credentials; `gh` already has them.
+  if [ "$explicit_base" -eq 0 ] && command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    log "downloading $asset with gh"
+    if gh release download --repo "$(repo_slug)" --pattern "$asset" --output "$tmp" --clobber >/dev/null 2>&1; then
+      chmod +x "$tmp"
+      command -v codesign >/dev/null 2>&1 && codesign --force --sign - "$tmp" >/dev/null 2>&1 || true
+      mv "$tmp" "$OUT"
+      log "installed prebuilt $OUT"
+      return 0
+    fi
+    rm -f "$tmp"
+  fi
+
   log "downloading $url"
-  if ! curl -fsSL --retry 2 -o "$tmp" "$url"; then
+  if ! curl -fsSL --http1.1 --retry 2 ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} -o "$tmp" "$url"; then
     rm -f "$tmp"
     return 1
   fi

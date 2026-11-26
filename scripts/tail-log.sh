@@ -2,7 +2,7 @@
 # Print the tail of the plugin log for the current herdr session.
 set -eu
 
-STATE="${HERDR_PLUGIN_STATE_DIR:-$HOME/.local/state/herdr/plugins/haptic-notify}"
+STATE="${HERDR_PLUGIN_STATE_DIR:-$HOME/.local/state/herdr/plugins/lucas.haptic-notify}"
 LOG="$STATE/haptic-notify.log"
 
 if [ ! -f "$LOG" ]; then

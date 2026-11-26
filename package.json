@@ -1,6 +1,6 @@
 {
   "name": "herdr-haptic-notify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Trackpad haptic notifications for herdr agents (macOS Taptic Engine)",

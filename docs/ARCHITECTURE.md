@@ -1,7 +1,7 @@
 # Architecture & research notes
 
-Everything here was verified on this machine — Apple Silicon MacBook Pro, macOS 26 —
-by calling the private framework directly and reading the event log back.
+Everything here was verified on an Apple Silicon MacBook Pro running macOS 26, by calling the
+private framework directly and reading the event log back.
 
 ## Why not `NSHapticFeedbackManager`
 

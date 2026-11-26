@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// herdr plugin: haptic-notify — trackpad haptic notifications on macOS.
+// herdr plugin: lucas.haptic-notify — trackpad haptic notifications on macOS.
 //
 // herdr runs this once per `pane.agent_status_changed` event and hands us the
 // event JSON in HERDR_PLUGIN_EVENT_JSON:
@@ -53,11 +53,11 @@ const DEFAULT_CONFIG = {
 const LOG_LIMIT_BYTES = 256 * 1024;
 
 const env = (name) => (process.env[name]?.length ? process.env[name] : undefined);
-const pluginRoot = () => env("HERDR_PLUGIN_ROOT") ?? join(homedir(), ".config/herdr/plugins/haptic-notify");
+const pluginRoot = () => env("HERDR_PLUGIN_ROOT") ?? join(homedir(), ".config/herdr/plugins/lucas.haptic-notify");
 const configDir = () =>
-  env("HERDR_PLUGIN_CONFIG_DIR") ?? join(homedir(), ".config/herdr/plugins/config/haptic-notify");
+  env("HERDR_PLUGIN_CONFIG_DIR") ?? join(homedir(), ".config/herdr/plugins/config/lucas.haptic-notify");
 const stateDir = () =>
-  env("HERDR_PLUGIN_STATE_DIR") ?? join(homedir(), ".local/state/herdr/plugins/haptic-notify");
+  env("HERDR_PLUGIN_STATE_DIR") ?? join(homedir(), ".local/state/herdr/plugins/lucas.haptic-notify");
 const expandHome = (path) => (path.startsWith("~/") ? join(homedir(), path.slice(2)) : path);
 const tapticBin = (config) =>
   config.taptic ? expandHome(config.taptic) : join(pluginRoot(), "bin", "taptic");

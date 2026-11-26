@@ -10,7 +10,7 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PLUGIN_ID=$(sed -n 's/^id[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$ROOT/herdr-plugin.toml" | head -1)
-PLUGIN_ID=${PLUGIN_ID:-haptic-notify}
+PLUGIN_ID=${PLUGIN_ID:-lucas.haptic-notify}
 CONFIG_DIR="$HOME/.config/herdr/plugins/config/$PLUGIN_ID"
 
 log() { printf '[install] %s\n' "$*"; }

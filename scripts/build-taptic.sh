@@ -3,7 +3,13 @@
 #
 # Order of preference:
 #   1. Prebuilt release asset for this architecture — no Xcode needed.
+#      The published `<asset>.sha256` is verified before the binary is run.
 #   2. Compile tools/taptic/taptic.swift with swiftc (Xcode Command Line Tools).
+#
+# Env:
+#   HAPTIC_SKIP_DOWNLOAD=1     skip 1, always build from source
+#   HAPTIC_REPO=owner/repo     override the release source (default: git origin)
+#   HAPTIC_RELEASE_BASE=<url>  override the release download base (implies no gh)
 #
 # Output: <plugin>/bin/taptic
 set -eu
@@ -21,6 +27,28 @@ case "$ARCH" in
 esac
 
 log() { printf '[build-taptic] %s\n' "$*" >&2; }
+warn() { printf '[build-taptic] warning: %s\n' "$*" >&2; }
+
+# Verify a downloaded binary against its published checksum file.
+# Missing checksum file: warn and continue (older releases).
+# Mismatch: hard failure — never run an unverified binary.
+verify_checksum() {
+  file=$1
+  sumfile=$2
+  if [ ! -s "$sumfile" ]; then
+    warn "no checksum published for $(basename "$file"); skipping verification"
+    return 0
+  fi
+  expected=$(awk 'NF {print $1; exit}' "$sumfile")
+  actual=$(shasum -a 256 "$file" | awk '{print $1}')
+  if [ -z "$expected" ] || [ "$expected" != "$actual" ]; then
+    printf '[build-taptic] CHECKSUM MISMATCH for %s\n  expected %s\n  actual   %s\n' \
+      "$(basename "$file")" "${expected:-<empty>}" "$actual" >&2
+    return 1
+  fi
+  log "checksum ok: $(basename "$file")"
+  return 0
+}
 
 if [ "$(uname -s)" != "Darwin" ]; then
   log "this plugin is macOS only (found $(uname -s)); nothing to build"
@@ -28,7 +56,11 @@ if [ "$(uname -s)" != "Darwin" ]; then
 fi
 
 # Already built and newer than the source? Keep it.
-if [ -x "$OUT" ] && [ "$OUT" -nt "$SRC" ]; then
+if [ "${HAPTIC_SKIP_DOWNLOAD:-0}" = "1" ]; then
+  log "HAPTIC_SKIP_DOWNLOAD=1 — building from source"
+fi
+
+if [ -x "$OUT" ] && [ "$OUT" -nt "$SRC" ] && [ "${HAPTIC_SKIP_DOWNLOAD:-0}" != "1" ]; then
   log "up to date: $OUT"
   exit 0
 fi
@@ -75,9 +107,16 @@ download_prebuilt() {
   if [ "$explicit_base" -eq 0 ] && command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     log "downloading $asset with gh"
     if gh release download --repo "$(repo_slug)" --pattern "$asset" --output "$tmp" --clobber >/dev/null 2>&1; then
+      rm -f "$tmp.sha256"
+      gh release download --repo "$(repo_slug)" --pattern "$asset.sha256" --output "$tmp.sha256" --clobber >/dev/null 2>&1 || true
+      if ! verify_checksum "$tmp" "$tmp.sha256"; then
+        rm -f "$tmp" "$tmp.sha256"
+        return 1
+      fi
       chmod +x "$tmp"
       command -v codesign >/dev/null 2>&1 && codesign --force --sign - "$tmp" >/dev/null 2>&1 || true
       mv "$tmp" "$OUT"
+      rm -f "$tmp.sha256"
       log "installed prebuilt $OUT"
       return 0
     fi
@@ -89,6 +128,14 @@ download_prebuilt() {
     rm -f "$tmp"
     return 1
   fi
+
+  rm -f "$tmp.sha256"
+  curl -fsSL --http1.1 --retry 2 ${GITHUB_TOKEN:+-H "Authorization: Bearer $GITHUB_TOKEN"} -o "$tmp.sha256" "$url.sha256" || rm -f "$tmp.sha256"
+  if ! verify_checksum "$tmp" "$tmp.sha256"; then
+    rm -f "$tmp" "$tmp.sha256"
+    return 1
+  fi
+  rm -f "$tmp.sha256"
   chmod +x "$tmp"
   # Gatekeeper: an unsigned arm64 binary will not run at all.
   if command -v codesign >/dev/null 2>&1; then
@@ -98,6 +145,11 @@ download_prebuilt() {
   log "installed prebuilt $OUT"
   return 0
 }
+
+if [ "${HAPTIC_SKIP_DOWNLOAD:-0}" = "1" ]; then
+  compile || exit 1
+  exit 0
+fi
 
 if download_prebuilt; then
   exit 0

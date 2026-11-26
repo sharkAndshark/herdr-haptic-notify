@@ -48,8 +48,9 @@ sh install.sh          # fetch/build bin/taptic, link into herdr, seed config
 
 `sh install.sh` needs neither Xcode nor `npm`: it downloads the prebuilt helper from
 the [latest release](https://github.com/sharkAndshark/herdr-haptic-notify/releases)
-(`gh release download` when the repo is private, plain `curl` otherwise) and only falls
-back to `swiftc` when no asset matches your architecture.
+(`gh release download` when the repo is private, plain `curl` otherwise), **verifies the
+published `sha256` before running it**, and only falls back to `swiftc` when no asset
+matches your architecture. Set `HAPTIC_SKIP_DOWNLOAD=1` to always build from source.
 
 Or, straight through herdr (needs git credentials for a private repo):
 
@@ -60,7 +61,7 @@ herdr plugin install sharkAndshark/herdr-haptic-notify
 Then feel it:
 
 ```sh
-herdr plugin action invoke test-done --plugin haptic-notify
+herdr plugin action invoke test-done --plugin lucas.haptic-notify
 ```
 
 ## Marketplace / letting other people install it
@@ -87,13 +88,13 @@ To publish it, three things:
 Then `herdr plugin install sharkAndshark/herdr-haptic-notify` works for everyone (herdr clones, shows a trust preview,
 and runs our `[[build]]` step), and the repo shows up on herdr.dev/plugins within half an hour.
 
-Before going public, consider: the build step downloads a prebuilt binary from this repo's releases — publishing a
-`taptic-macos-<arch>.sha256` alongside it and verifying the checksum in `scripts/build-taptic.sh` would let reviewers
-check what they run (they can always fall back to compiling the Swift source instead).
+For reviewers: the build step downloads a prebuilt binary from this repo's releases and **verifies the published
+`sha256`** before running it; `HAPTIC_SKIP_DOWNLOAD=1 sh scripts/build-taptic.sh` compiles the auditable Swift source
+instead. The plugin id is `lucas.haptic-notify`.
 
 ## Configure
 
-`~/.config/herdr/plugins/config/haptic-notify/config.json` (seeded from [`config.example.json`](config.example.json)):
+`~/.config/herdr/plugins/config/lucas.haptic-notify/config.json` (seeded from [`config.example.json`](config.example.json)):
 
 ```jsonc
 {
@@ -159,7 +160,7 @@ patterns, keep notes short, keep gaps, and stay below intensity 2.0 — see
 
 ```sh
 sh scripts/tail-log.sh                                   # what the hook decided and why
-herdr plugin action invoke test-done --plugin haptic-notify
+herdr plugin action invoke test-done --plugin lucas.haptic-notify
 ./bin/taptic -w 6 -I 1.5 -c 3                             # raw, bypassing herdr
 ```
 
@@ -175,8 +176,8 @@ herdr plugin action invoke test-done --plugin haptic-notify
 ## Uninstall
 
 ```sh
-herdr plugin unlink haptic-notify
-rm -rf ~/.config/herdr/plugins/config/haptic-notify
+herdr plugin unlink lucas.haptic-notify
+rm -rf ~/.config/herdr/plugins/config/lucas.haptic-notify
 ```
 
 ## Development

@@ -3,11 +3,11 @@
 # Every target is plain shell + node; no npm install, no bundler.
 
 SHELL := /bin/sh
-PLUGIN_ID := haptic-notify
+PLUGIN_ID := lucas.haptic-notify
 REPO_ROOT := $(shell pwd)
 CONFIG_DIR := $(HOME)/.config/herdr/plugins/config/$(PLUGIN_ID)
 
-.PHONY: help build test test-fast lint hooks install uninstall lab clean ci
+.PHONY: help build test test-fast lint hooks install uninstall lab clean ci release-assets
 
 help:
 	@printf 'targets:\n'
@@ -19,6 +19,7 @@ help:
 	@printf '  make install    build, link the plugin into herdr, seed config\n'
 	@printf '  make uninstall  unlink the plugin from herdr\n'
 	@printf '  make lab        open the Haptic Lab UI (http://127.0.0.1:8765)\n'
+	@printf '  make release-assets  build dist/taptic-macos-{arm64,x86_64} + .sha256\n'
 	@printf '  make clean      remove build output\n'
 
 build:
@@ -61,3 +62,15 @@ ci: lint test build
 clean:
 	@rm -rf bin
 	@printf 'removed bin/\n'
+
+# Local release artefacts: one binary per arch plus the checksum files that
+# scripts/build-taptic.sh verifies before running a download.
+release-assets:
+	@HAPTIC_SKIP_DOWNLOAD=1 sh scripts/build-taptic.sh
+	@mkdir -p dist
+	@cp bin/taptic dist/taptic-macos-arm64
+	@swiftc -O -target x86_64-apple-macos12.0 -o dist/taptic-macos-x86_64 tools/taptic/taptic.swift
+	@for f in dist/taptic-macos-arm64 dist/taptic-macos-x86_64; do \
+		shasum -a 256 "$$f" | awk '{print $$1"  "$$2}' > "$$f.sha256"; \
+		printf '  %s  <- %s\n' "$$(cat $$f.sha256)" "$$f"; \
+	done

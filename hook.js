@@ -157,13 +157,31 @@ function writeRate(times) {
 
 // ----------------------------------------------------------------- firing
 
-function fire(config, notes) {
+/**
+ * Play a sequence and wait for it.
+ *
+ * Deliberately NOT detached: herdr documents that "plugins must stop detached
+ * background processes before their parent command or pane exits; processes
+ * surviving server exit are not protected from cleanup", so a fire-and-forget
+ * child could be reaped mid-pattern. A pattern lasts <= maxTotalMs (~800 ms),
+ * so waiting is cheap and keeps herdr's process accounting honest.
+ */
+function fire(config, notes, timeoutMs = 3000) {
   const sequence = serialize(notes);
   const bin = tapticBin(config);
-  const child = spawn(bin, ["--sequence", sequence], { stdio: "ignore", detached: true });
-  child.on("error", (error) => log({ kind: "taptic-error", bin, error: error.message }));
-  child.unref();
-  return { sequence, bin };
+  return new Promise((resolve) => {
+    const child = spawn(bin, ["--sequence", sequence], { stdio: "ignore" });
+    const timer = setTimeout(() => child.kill("SIGKILL"), timeoutMs);
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      log({ kind: "taptic-error", bin, error: error.message });
+      resolve({ sequence, bin, error: error.message });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      resolve({ sequence, bin, exitCode: code });
+    });
+  });
 }
 
 // ------------------------------------------------------------- herdr re-ask
@@ -231,9 +249,9 @@ async function main() {
       console.error(`haptic-notify: ${safe.reason}`);
       process.exit(2);
     }
-    const { sequence, bin } = fire(config, safe.notes);
-    log({ kind: "self-test", status, sequence, bin });
-    console.log(`haptic-notify: fired ${status} via ${bin} (${sequence})`);
+    const result = await fire(config, safe.notes);
+    log({ kind: "self-test", status, ...result });
+    console.log(`haptic-notify: fired ${status} via ${result.bin} (${result.sequence}) exit=${result.exitCode}`);
     return;
   }
 
@@ -317,7 +335,7 @@ async function main() {
     return;
   }
 
-  const { sequence, bin } = fire(config, safe.notes);
+  const result = await fire(config, safe.notes);
   markFired(event.paneId, event.status);
   markPaneFired(event.paneId);
   writeRate([...history, Date.now()]);
@@ -326,8 +344,9 @@ async function main() {
     pane: event.paneId,
     status: event.status,
     label: entry.label,
-    sequence,
-    bin,
+    sequence: result.sequence,
+    bin: result.bin,
+    exitCode: result.exitCode,
     summary: summarize(safe.notes),
     adjusted: safe.adjusted,
     title: current.title,

@@ -63,6 +63,34 @@ Then feel it:
 herdr plugin action invoke test-done --plugin haptic-notify
 ```
 
+## Marketplace / letting other people install it
+
+herdr discovery is the [marketplace](https://herdr.dev/plugins/) — an **automatic index of public GitHub repositories**
+tagged with the topic `herdr-plugin` whose default branch contains at least one `herdr-plugin.toml` with parseable
+metadata (`id`, `name`, `version`, `platforms`, `min_herdr_version`). The index refreshes every ~30 minutes; nothing is
+reviewed, so a listing is not an endorsement.
+
+This repository is currently **private**, so:
+
+| | works today | notes |
+|---|---|---|
+| `herdr plugin install sharkAndshark/herdr-haptic-notify` by someone else | ✗ | needs write/read access to a private repo |
+| marketplace listing at herdr.dev/plugins | ✗ | index only covers public repositories |
+| clone + `sh install.sh` by someone with access | ✓ | |
+
+To publish it, three things:
+
+1. make the repository public (`gh repo edit --visibility public --accept-visibility-change-consequences`);
+2. add the topic: `gh repo edit --add-topic herdr-plugin`;
+3. keep `herdr-plugin.toml` at the repo root with `min_herdr_version` and top-level `platforms` (both already set).
+
+Then `herdr plugin install sharkAndshark/herdr-haptic-notify` works for everyone (herdr clones, shows a trust preview,
+and runs our `[[build]]` step), and the repo shows up on herdr.dev/plugins within half an hour.
+
+Before going public, consider: the build step downloads a prebuilt binary from this repo's releases — publishing a
+`taptic-macos-<arch>.sha256` alongside it and verifying the checksum in `scripts/build-taptic.sh` would let reviewers
+check what they run (they can always fall back to compiling the Swift source instead).
+
 ## Configure
 
 `~/.config/herdr/plugins/config/haptic-notify/config.json` (seeded from [`config.example.json`](config.example.json)):

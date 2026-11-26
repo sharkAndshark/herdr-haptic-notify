@@ -98,7 +98,11 @@ Event shape (lenient parsing — only `pane_id` and `agent_status` are required)
          "workspace_id":"w1","agent":"pi","agent_status":"done"}}
 ```
 
-Hooks are one short-lived process per event, with `HERDR_PLUGIN_EVENT_JSON`,
+Hooks are one short-lived process per event. herdr's plugin contract says a plugin *"must stop detached
+background processes before their parent command or pane exits"* — surviving processes are not protected from cleanup —
+so `hook.js` waits for `taptic` to finish instead of firing and forgetting (a pattern is <= ~800 ms).
+
+Each hook invocation gets `HERDR_PLUGIN_EVENT_JSON`,
 `HERDR_PLUGIN_ROOT`, `HERDR_PLUGIN_CONFIG_DIR`, `HERDR_PLUGIN_STATE_DIR`,
 `HERDR_BIN_PATH` in the environment.
 

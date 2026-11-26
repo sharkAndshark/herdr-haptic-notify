@@ -44,7 +44,7 @@ title = "Haptic notify: pattern lab"
 description = "Open the local pattern audition page (http://127.0.0.1:8765)"
 contexts = ["global"]
 platforms = ["macos"]
-command = ["node", "lab/server.mjs", "--open"]
+command = ["node", "lab/server.mjs", "--open", "--idle-timeout", "900"]
 
 [[actions]]
 id = "print-config"

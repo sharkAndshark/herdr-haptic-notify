@@ -54,7 +54,7 @@ uninstall:
 	@herdr plugin unlink $(PLUGIN_ID) || true
 
 lab:
-	@node lab/server.mjs --open
+	@node lab/server.mjs --open --idle-timeout 1800
 
 ci: lint test build
 	@printf 'ci ok\n'

@@ -8,7 +8,11 @@
 // Bound to 127.0.0.1 only. It never runs arbitrary commands: every field is
 // parsed as a number, range-checked and re-serialised.
 //
-//   node lab/server.mjs [--port 8765] [--open]
+//   node lab/server.mjs [--port 8765] [--open] [--idle-timeout SECONDS]
+//
+// `--idle-timeout` makes the process exit on its own after that many seconds
+// without a request, so it can be launched from a herdr action (which expects
+// a short-lived child) instead of lingering forever.
 
 import { spawn } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -28,6 +32,7 @@ const MAX_NOTES = 16;
 const MAX_TOTAL_MS = 3000;
 
 let current = null;
+let lastRequestAt = Date.now();
 
 function clamp(value, low, high) {
   return Math.max(low, Math.min(high, value));
@@ -199,14 +204,36 @@ async function handle(req, res) {
   send(res, 404, { error: "not found" });
 }
 
+function flagValue(args, name) {
+  const index = args.indexOf(name);
+  return index !== -1 ? args[index + 1] : undefined;
+}
+
+function openInBrowser(url) {
+  if (process.platform !== "darwin") return;
+  spawn("open", [url], { stdio: "ignore", detached: true }).unref();
+}
+
 function main() {
   const args = process.argv.slice(2);
-  const portFlag = args.indexOf("--port");
-  const port = portFlag !== -1 ? Number(args[portFlag + 1]) : Number(process.env.HAPTIC_LAB_PORT ?? 8765);
+  const port = Number(flagValue(args, "--port") ?? process.env.HAPTIC_LAB_PORT ?? 8765);
   const open = args.includes("--open");
+  const idleTimeout = Number(flagValue(args, "--idle-timeout") ?? 0);
 
   const server = createServer((req, res) => {
+    lastRequestAt = Date.now();
     handle(req, res).catch((error) => send(res, 400, { error: error.message }));
+  });
+
+  server.on("error", (error) => {
+    if (error.code === "EADDRINUSE") {
+      const url = `http://127.0.0.1:${port}/`;
+      console.log(`[haptic-lab] already running on ${url} — reusing it`);
+      if (open) openInBrowser(url);
+      process.exit(0);
+    }
+    console.error(`[haptic-lab] ${error.message}`);
+    process.exit(1);
   });
 
   server.listen(port, "127.0.0.1", async () => {
@@ -215,9 +242,16 @@ function main() {
     console.log(`[haptic-lab] listening on ${url}`);
     console.log(`[haptic-lab] taptic: ${bin ?? "NOT FOUND (run `make build`)"}`);
     console.log("[haptic-lab] Ctrl+C to stop");
-    if (open && process.platform === "darwin") {
-      const { spawn: spawnOpen } = await import("node:child_process");
-      spawnOpen("open", [url], { stdio: "ignore", detached: true }).unref();
+    if (open) openInBrowser(url);
+    if (idleTimeout > 0) {
+      console.log(`[haptic-lab] exits after ${idleTimeout}s without a request`);
+      setInterval(() => {
+        if (Date.now() - lastRequestAt > idleTimeout * 1000) {
+          console.log("[haptic-lab] idle — exiting");
+          server.close();
+          process.exit(0);
+        }
+      }, 5000).unref();
     }
   });
 }

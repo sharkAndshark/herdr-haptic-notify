@@ -4,26 +4,26 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
 
-Trackpad **haptic** notifications for [herdr](https://herdr.dev) agents — for people who keep their Mac muted.
+A [herdr](https://herdr.dev) plugin for macOS. When an agent finishes, or stops to ask you something, your Mac's
+trackpad vibrates for about half a second. Useful when the Mac is muted.
 
-When an agent finishes, or stops to ask you something, the Force Touch trackpad taps a short chime you feel instead of
-hear. No window, no sound, no daemon.
+No window, no sound, and nothing running in the background. It only needs the Force Touch trackpad.
 
 ```sh
 herdr plugin install sharkAndshark/herdr-haptic-notify
 herdr plugin action invoke test-done --plugin lucas.haptic-notify
 ```
 
-That is the whole onboarding. **Nothing to configure** — the default `m1` chime and the safety limits are built in.
+That is the whole onboarding. **Nothing to configure**: the default vibration and the safety limits are built in.
 
 ## What it feels like
 
 | moment | what happens |
 |---|---|
-| an agent finishes (`done`, or `idle` for the pane you are looking at) | one ~420 ms three-note chime |
-| an agent stops for approval (`blocked`) | the same chime |
+| an agent finishes (`done`, or `idle` for the pane you are looking at) | one vibration, about 0.4 s |
+| an agent stops for approval (`blocked`) | the same vibration |
 | you are typing | it still fires — no finger needs to be on the trackpad |
-| several agents finish at once | at most one buzz per pane per 15 s, one every 2 s globally |
+| several agents finish at once | at most one per pane per 15 s, one every 2 s in total |
 | herdr is closed | nothing runs |
 
 ## Actions
@@ -55,7 +55,7 @@ The config file is optional and only exists once you change something:
 - [docs/CONFIG.md](docs/CONFIG.md) → full config reference, sequence grammar, common tweaks, safety numbers
 - `"statuses": {}` mutes everything while keeping the plugin installed; `"enabled": false` disables it entirely
 
-Default pattern (`m1`): `70,70,3,1.3,0.34; 70,80,3,1.3,0.5; 130,0,3,1.35,0.66` — rising three notes, waveform 3,
+Default pattern (`m1`): `70,70,3,1.3,0.34; 70,80,3,1.3,0.5; 130,0,3,1.35,0.66` — three rising notes, waveform 3,
 intensity 1.35. Notes are ≤ 160 ms with gaps (64 % duty cycle); intensity is clamped to 1.6 and any alert over 800 ms
 is refused, because a Taptic Engine dislikes sustained drive. Reasoning: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 

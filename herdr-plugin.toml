@@ -2,7 +2,7 @@ id = "lucas.haptic-notify"
 name = "Haptic Notify"
 version = "0.3.0"
 min_herdr_version = "0.9.0"
-description = "Trackpad haptic notifications when a herdr agent finishes or needs attention (macOS)"
+description = "One short trackpad vibration when an agent finishes or is waiting for you. No configuration needed."
 platforms = ["macos"]
 
 # Builds bin/taptic from tools/taptic/taptic.swift (or unpacks a prebuilt

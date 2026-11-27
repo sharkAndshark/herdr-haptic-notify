@@ -1,6 +1,6 @@
 # Configuration reference
 
-Everything here is **optional**: without a config file the built-in defaults apply (one `m1` chime for `done`,
+Everything here is **optional**: without a config file the built-in defaults apply (one vibration for `done`,
 `blocked` and `idle`, with the safety limits below). A file is only needed when you want to change something.
 
 ```sh
@@ -52,7 +52,7 @@ onMs,offMs[,waveform,intensity,frequency] → notes joined with ";"
 ```
 
 `on` keeps tapping for that long (each actuation costs ~21 ms of driver round-trip), `off` is silence. Example,
-the default `m1`, a rising three-note chime of 420 ms:
+the default `m1`, three rising notes over 420 ms:
 
 ```
 70,70,3,1.3,0.34; 70,80,3,1.3,0.5; 130,0,3,1.35,0.66
